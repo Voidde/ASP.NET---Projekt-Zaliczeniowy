@@ -3,9 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Projekt.Models
 {
-    [Table("Artists")]
     public class Artist
     {
+        public Artist()
+        {
+            Events = new HashSet<Event>();
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ArtistId { get; set; }
@@ -16,12 +19,12 @@ namespace Projekt.Models
         [Required]
         [Column("Surname")]
         [StringLength(30)]
-        public string Surname { get; set; }
+        public string? Surname { get; set; }
         [Required]
         [Column("Nickname")]
         [StringLength(30)]
-        public string Nickname { get; set; }
-        virtual public ISet<Event> Events { get; set; }
+        public string? Nickname { get; set; }
+        public ICollection<Event> Events { get; set; }
 
 
     }

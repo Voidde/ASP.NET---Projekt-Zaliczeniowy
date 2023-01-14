@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Projekt.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Projekt
@@ -7,10 +9,13 @@ namespace Projekt
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+                        var connectionString = builder.Configuration.GetConnectionString("IdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityContextConnection' not found.");
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration["Data:Connection"]));
 
+ 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -25,6 +30,7 @@ namespace Projekt
             app.UseStaticFiles();
 
             app.UseRouting();
+                        app.UseAuthentication();;
 
             app.UseAuthorization();
 
