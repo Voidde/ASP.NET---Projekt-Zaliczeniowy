@@ -5,6 +5,10 @@ namespace Projekt.Models
 {
     public class Place
     {
+        public Place()
+        {
+            Events = new HashSet<Event>();
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PlaceId { get; set; }

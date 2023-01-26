@@ -11,7 +11,6 @@ namespace Projekt.Models
 
         public string? ClientId { get; set; }
 
-        [ForeignKey("EventId")]
         public int? EventId { get; set; }
 
         public decimal TicketPrice { get; set; }

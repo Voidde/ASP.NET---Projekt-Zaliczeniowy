@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Projekt.Models.Event>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>Index</h1>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.EventId) </th>
+            <th>@Html.DisplayNameFor(model => model.EventName) </th>
+            <th>@Html.DisplayNameFor(model => model.TypeOfEvent) </th>
+            <th>@Html.DisplayNameFor(model => model.DateOfEvent) </th>
+            <th>@Html.DisplayNameFor(model => model.TicketPrice) </th>
+            <th></th>
+        </tr>
+    </thead>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.EventId)</td>
+            <td>@Html.DisplayFor(modelItem => item.EventName)</td>
+            <td>@Html.DisplayFor(modelItem => item.TypeOfEvent)</td>
+            <td>@Html.DisplayFor(modelItem => item.DateOfEvent)</td>
+            <td>@Html.DisplayFor(modelItem => item.TicketPrice)</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.EventId">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.EventId">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
+                <a asp-controller="Artist" asp-action="Index" asp-route-id="@item.EventId">Artists</a>
+            </td>
+        </tr>
+
+    }
+</table>

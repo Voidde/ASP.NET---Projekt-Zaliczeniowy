@@ -17,7 +17,7 @@ namespace Projekt.Models
         [Required]
         [Column("EventName")]
         [StringLength(30)]
-        public string? Name { get; set; }
+        public string? EventName { get; set; }
 
         [Required]
         [Column("EventDescription")]
@@ -39,7 +39,6 @@ namespace Projekt.Models
 
         public ICollection<Artist> Artists { get; set; }
 
-        [ForeignKey("PlaceId")]
         public int PlaceId { get; set; }
 
         public Place Place { get; set; }

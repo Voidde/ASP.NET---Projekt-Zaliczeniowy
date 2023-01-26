@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Projekt.Models.Place>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>Index</h1>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.PlaceId) </th>
+            <th>@Html.DisplayNameFor(model => model.PlaceName) </th>
+            <th>@Html.DisplayNameFor(model => model.City) </th>
+            <th>@Html.DisplayNameFor(model => model.Address) </th>
+            <th>@Html.DisplayNameFor(model => model.AddressNr) </th>
+            <th>@Html.DisplayNameFor(model => model.PostalCode) </th>
+            <th></th>
+        </tr>
+    </thead>
+    @foreach (var item in Model)
+    {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.PlaceId)</td>
+                <td>@Html.DisplayFor(modelItem => item.PlaceName)</td>
+                <td>@Html.DisplayFor(modelItem => item.City)</td>
+                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                <td>@Html.DisplayFor(modelItem => item.AddressNr)</td>
+                <td>@Html.DisplayFor(modelItem => item.PostalCode)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.PlaceId">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.PlaceId">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.PlaceId">Delete</a>
+                        <a asp-controller="Event" asp-action="Index" asp-route-id="@item.PlaceId">Events</a>
+            </td>
+            </tr>
+
+    }
+</table>

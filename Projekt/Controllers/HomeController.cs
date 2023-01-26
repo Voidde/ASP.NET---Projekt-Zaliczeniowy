@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Projekt.Models;
 using System.Diagnostics;
 
@@ -7,15 +8,17 @@ namespace Projekt.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            return View(await _context.Events.ToListAsync());
         }
 
         public IActionResult Privacy()
@@ -23,6 +26,18 @@ namespace Projekt.Controllers
             return View();
         }
         public IActionResult Artist()
+        {
+            return View();
+        }
+        public IActionResult Event()
+        {
+            return View();
+        }
+        public IActionResult Ticket()
+        {
+            return View();
+        }
+        public IActionResult Place()
         {
             return View();
         }

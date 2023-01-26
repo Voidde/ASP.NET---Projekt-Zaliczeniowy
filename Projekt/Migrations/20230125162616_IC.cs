@@ -29,7 +29,7 @@ namespace Projekt.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Place",
+                name: "Places",
                 columns: table => new
                 {
                     PlaceId = table.Column<int>(type: "int", nullable: false)
@@ -43,7 +43,7 @@ namespace Projekt.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Place", x => x.PlaceId);
+                    table.PrimaryKey("PK_Places", x => x.PlaceId);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,9 +63,9 @@ namespace Projekt.Migrations
                 {
                     table.PrimaryKey("PK_Events", x => x.EventId);
                     table.ForeignKey(
-                        name: "FK_Events_Place_PlaceId",
+                        name: "FK_Events_Places_PlaceId",
                         column: x => x.PlaceId,
-                        principalTable: "Place",
+                        principalTable: "Places",
                         principalColumn: "PlaceId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -125,7 +125,7 @@ namespace Projekt.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Place",
+                table: "Places",
                 columns: new[] { "PlaceId", "Address", "AddressNr", "City", "PlaceDescription", "PlaceName", "PostalCode" },
                 values: new object[,]
                 {
@@ -160,8 +160,8 @@ namespace Projekt.Migrations
                 values: new object[,]
                 {
                     { 1, "asad", 1, 40m },
-                    { 2, "dasd", 3, 50m },
-                    { 3, "dfsdfa", 2, 30m }
+                    { 2, "dasd", 1, 40m },
+                    { 3, "dfsdfa", 1, 40m }
                 });
 
             migrationBuilder.CreateIndex(
@@ -196,7 +196,7 @@ namespace Projekt.Migrations
                 name: "Events");
 
             migrationBuilder.DropTable(
-                name: "Place");
+                name: "Places");
         }
     }
 }

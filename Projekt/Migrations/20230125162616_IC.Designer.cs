@@ -12,7 +12,7 @@ using Projekt.Models;
 namespace Projekt.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230114163958_IC")]
+    [Migration("20230125162616_IC")]
     partial class IC
     {
         /// <inheritdoc />
@@ -129,7 +129,7 @@ namespace Projekt.Migrations
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("EventDescription");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("EventName")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
@@ -160,7 +160,7 @@ namespace Projekt.Migrations
                             EventId = 1,
                             DateOfEvent = new DateTime(2023, 2, 1, 18, 30, 0, 0, DateTimeKind.Unspecified),
                             Description = "Całonocna zabawa z Szotem!",
-                            Name = "Noc z Szotem!",
+                            EventName = "Noc z Szotem!",
                             PlaceId = 3,
                             TicketPrice = 40m,
                             TypeOfEvent = "Koncert"
@@ -170,7 +170,7 @@ namespace Projekt.Migrations
                             EventId = 2,
                             DateOfEvent = new DateTime(2023, 4, 12, 12, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Spektakl teatralny ",
-                            Name = "Romeo i Julia",
+                            EventName = "Romeo i Julia",
                             PlaceId = 1,
                             TicketPrice = 30m,
                             TypeOfEvent = "Teatr"
@@ -180,7 +180,7 @@ namespace Projekt.Migrations
                             EventId = 3,
                             DateOfEvent = new DateTime(2023, 5, 14, 15, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Opera",
-                            Name = "Opera",
+                            EventName = "Opera",
                             PlaceId = 2,
                             TicketPrice = 50m,
                             TypeOfEvent = "Opera"
@@ -233,7 +233,7 @@ namespace Projekt.Migrations
 
                     b.HasKey("PlaceId");
 
-                    b.ToTable("Place");
+                    b.ToTable("Places");
 
                     b.HasData(
                         new
@@ -303,15 +303,15 @@ namespace Projekt.Migrations
                         {
                             TicketId = 2,
                             ClientId = "dasd",
-                            EventId = 3,
-                            TicketPrice = 50m
+                            EventId = 1,
+                            TicketPrice = 40m
                         },
                         new
                         {
                             TicketId = 3,
                             ClientId = "dfsdfa",
-                            EventId = 2,
-                            TicketPrice = 30m
+                            EventId = 1,
+                            TicketPrice = 40m
                         });
                 });
 

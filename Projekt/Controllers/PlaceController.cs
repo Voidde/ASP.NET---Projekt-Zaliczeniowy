@@ -11,80 +11,79 @@ using Projekt.Models;
 
 namespace Projekt.Controllers
 {
-    public class ArtistController : Controller
+    public class PlaceController : Controller
     {
         private readonly AppDbContext _context;
-        public ArtistController(AppDbContext context)
+        public PlaceController(AppDbContext context)
         {
             _context = context;
         }
-        // GET: ArtistController
+        // GET: PlaceController
         public async Task<IActionResult> Index()
         {
-           return View(await _context.Artists.ToListAsync());
+            return View(await _context.Places.ToListAsync());
         }
 
-        // GET: ArtistController/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: PlaceController/Details/5
+        public async Task<ActionResult> Details(int id)
         {
-            if (id == null || _context.Artists == null)
+            if (id == null || _context.Places == null)
             {
                 return NotFound();
             }
 
-            var artist = await _context.Artists
-                .FirstOrDefaultAsync(a => a.ArtistId == id);
-            if (artist == null)
+            var place = await _context.Places
+                .FirstOrDefaultAsync(m => m.PlaceId == id);
+            if (place == null)
             {
                 return NotFound();
             }
 
-            return View(artist);
+            return View(place);
         }
 
-        // GET: ArtistController/Create
+        // GET: PlaceController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: ArtistController/Create
+        // POST: PlaceController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ArtistId,Name,Surname,Nickname")]Artist artist)
+        public async Task<IActionResult> Create([Bind("PlaceId,PlaceName,City,PostalCode,Address,AddressNr,PlaceDescription")] Place place)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(artist);
+                _context.Add(place);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(artist);
+            return View(place);
         }
-        
 
-        // GET: ArtistController/Edit/5
+        // GET: PlaceController/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Artists == null)
+            if (id == null || _context.Places == null)
             {
                 return NotFound();
             }
 
-            var artist = await _context.Artists.FindAsync(id);
-            if (artist == null)
+            var place = await _context.Places.FindAsync(id);
+            if (place == null)
             {
                 return NotFound();
             }
-            return View(artist);
+            return View(place);
         }
 
-        // POST: ArtistController/Edit/5
+        // POST: PlaceController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ArtistId,Name,Surname,Nickname")] Artist artist)
+        public async Task<IActionResult> Edit(int id, [Bind("PlaceName,City,PostalCode,Address,AddressNr,PlaceDescription")] Place place)
         {
-            if (id != artist.ArtistId)
+            if (id != place.PlaceId)
             {
                 return NotFound();
             }
@@ -93,12 +92,12 @@ namespace Projekt.Controllers
             {
                 try
                 {
-                    _context.Update(artist);
+                    _context.Update(place);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArtistExists(artist.ArtistId))
+                    if (!PlaceExists(place.PlaceId))
                     {
                         return NotFound();
                     }
@@ -109,48 +108,48 @@ namespace Projekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(artist);
+            return View(place);
         }
 
-        // GET: ArtistController/Delete/5
-        public async Task<ActionResult> Delete(int? id)
+        // GET: PlaceController/Delete/5
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || _context.Artists == null)
+            if (id == null || _context.Places == null)
             {
                 return NotFound();
             }
 
-            var artist = await _context.Artists
-                .FirstOrDefaultAsync(m => m.ArtistId == id);
-            if (artist == null)
+            var place = await _context.Places
+                .FirstOrDefaultAsync(m => m.PlaceId == id);
+            if (place == null)
             {
                 return NotFound();
             }
 
-            return View(artist);
+            return View(place);
         }
 
-        // POST: ArtistController/Delete/5
-        [HttpPost,ActionName("Delete")]
+        // POST: PlaceController/Delete/5
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int? id)
+        public async Task<IActionResult> DeleteConfrimed(int id)
         {
-            if (_context.Artists == null)
+            if (_context.Places == null)
             {
-                return Problem("Entity set 'AppDbContext.Artists'  is null.");
+                return Problem("Entity set 'AppDbContext.Places'  is null.");
             }
-            var artist = await _context.Artists.FindAsync(id);
-            if (artist != null)
+            var place = await _context.Places.FindAsync(id);
+            if (place != null)
             {
-                _context.Artists.Remove(artist);
+                _context.Places.Remove(place);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        private bool ArtistExists(int id)
+        private bool PlaceExists(int id)
         {
-            return _context.Artists.Any(e => e.ArtistId == id);
+            return _context.Places.Any(e => e.PlaceId == id);
         }
     }
 }
