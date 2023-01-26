@@ -12,8 +12,8 @@ using Projekt.Models;
 namespace Projekt.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230125203939_Identity")]
-    partial class Identity
+    [Migration("20230126194430_Create")]
+    partial class Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,6 +82,22 @@ namespace Projekt.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "7e92aa58-092c-48ac-96ea-f3fabf04c221",
+                            ConcurrencyStamp = "c636af18-8ca1-425b-bc6d-4452ed2c669c",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2d775fd3-6437-44b5-834e-df02ece413e0",
+                            ConcurrencyStamp = "db10c345-220e-4109-b3e2-fe4957b1e4ee",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -171,6 +187,18 @@ namespace Projekt.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "87f784a1-5974-4162-836c-96f859d1e608",
+                            RoleId = "2d775fd3-6437-44b5-834e-df02ece413e0"
+                        },
+                        new
+                        {
+                            UserId = "183e73f0-0037-41d3-aed9-99c22240b028",
+                            RoleId = "7e92aa58-092c-48ac-96ea-f3fabf04c221"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -257,6 +285,40 @@ namespace Projekt.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "87f784a1-5974-4162-836c-96f859d1e608",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0e73c0b1-5292-48b6-9be4-92f7a8f45124",
+                            Email = "TestUser@mail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "TESTUSER@MAIL.COM",
+                            NormalizedUserName = "TESTUSER@MAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEP3CDWM6cM/k+dvw6xwnRNlwllpU5a3XfEAJk4AxH86RHqqJ/0GrQFpF+S95rhbd/w==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "42a1d3da-d7e0-4af0-b883-2dd0bac0aaf3",
+                            TwoFactorEnabled = false,
+                            UserName = "TestUser@mail.com"
+                        },
+                        new
+                        {
+                            Id = "183e73f0-0037-41d3-aed9-99c22240b028",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3c94af94-a196-4d20-8fa5-f4f5ebbfb949",
+                            Email = "Admin@mail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@MAIL.COM",
+                            NormalizedUserName = "ADMIN@mail.com",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKIS4HYEeMLH7pSCsG8iuiPxERnhtaQ+ANJaHfn17xv24+4GoU8Ue4UMt/UHb5jFYw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "dc163573-b602-416f-93c7-9104307a4082",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin@mail.com"
+                        });
                 });
 
             modelBuilder.Entity("Projekt.Models.Artist", b =>
@@ -478,14 +540,16 @@ namespace Projekt.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketId"));
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("EventId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<decimal>("TicketPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TicketId");
 
@@ -497,23 +561,23 @@ namespace Projekt.Migrations
                         new
                         {
                             TicketId = 1,
-                            ClientId = "asad",
                             EventId = 1,
-                            TicketPrice = 40m
+                            TicketPrice = 40m,
+                            UserName = "asad"
                         },
                         new
                         {
                             TicketId = 2,
-                            ClientId = "dasd",
                             EventId = 1,
-                            TicketPrice = 40m
+                            TicketPrice = 40m,
+                            UserName = "dasd"
                         },
                         new
                         {
                             TicketId = 3,
-                            ClientId = "dfsdfa",
                             EventId = 1,
-                            TicketPrice = 40m
+                            TicketPrice = 40m,
+                            UserName = "dfsdfa"
                         });
                 });
 
@@ -598,7 +662,9 @@ namespace Projekt.Migrations
                 {
                     b.HasOne("Projekt.Models.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("EventId");
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Event");
                 });

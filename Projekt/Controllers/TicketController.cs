@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,136 +13,90 @@ using Projekt.Models;
 
 namespace Projekt.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class TicketController : Controller
     {
-        private readonly AppDbContext _context;
-        public TicketController(AppDbContext context)
+        private readonly ITicketService _ticketService;
+        public TicketController(AppDbContext context,ITicketService ticketService)
         {
-            _context= context;
+            _ticketService= ticketService;
         }
+
+        [Authorize(Roles = "Admin")]
         // GET: TicketController
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Tickets.ToListAsync());
+            return View(_ticketService.FindAll());
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: TicketController/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Tickets == null)
-            {
-                return NotFound();
-            }
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(a => a.TicketId == id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-            return View(ticket);
+            var ticket = _ticketService.FindBy(id);
+            return ticket is null ? NotFound() : View(ticket);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: TicketController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: TicketController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,EventId,ClientId,TicketPrice")] Ticket ticket)
+        public IActionResult Create([Bind("TicketId,EventId,UserName,TicketPrice")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
+                _ticketService.Save(ticket);
                 return RedirectToAction(nameof(Index));
             }
             return View(ticket);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: TicketController/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int? id)
         {
-           if (id == null || _context.Tickets == null)
-            {
-                return NotFound();
-            }
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-            return View(ticket);
+            var ticket = _ticketService.FindBy(id);
+            return ticket is null ? NotFound() : View(ticket);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: TicketController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TicketId,EventId,ClientId,TicketPrice")] Ticket ticket)
+        public IActionResult Edit(int id, [Bind("TicketId,EventId,UserName,TicketPrice")] Ticket ticket)
         {
-            if (id != ticket.TicketId)
+            if(ModelState.IsValid)
             {
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(ticket);
-                    await _context.SaveChangesAsync();
-                }
-                catch(DbUpdateConcurrencyException)
-                {
-                    if (!TicketExists(ticket.TicketId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _ticketService.Update(ticket);
                 return RedirectToAction(nameof(Index));
             }
             return View(ticket);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: TicketController/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
-            if(id == null || _context.Tickets == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(a => a.TicketId == id);
-            if(ticket == null)
-            {
-                return NotFound();
-            }
-            return View(ticket);
+            var ticket = _ticketService.FindBy(id);
+            return ticket is null ? NotFound() : View(ticket);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: TicketController/Delete/5
         [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        public IActionResult DeleteConfirmed(int? id)
         {
-            if (_context.Tickets == null)
+           if (_ticketService.Delete(id))
             {
-                return Problem("Entity Tickets is empty");
+                return RedirectToAction(nameof(Index));
             }
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket != null)
-            {
-                _context.Tickets.Remove(ticket);
-            }
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index)); 
+            return Problem("This Ticket doesn't exist, can't delete");
         }
-        private bool TicketExists(int id)
-        {
-            return _context.Artists.Any(e => e.ArtistId == id);
-        }
+
     }
 }

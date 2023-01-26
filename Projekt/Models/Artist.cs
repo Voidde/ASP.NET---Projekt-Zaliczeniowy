@@ -24,6 +24,7 @@ namespace Projekt.Models
         [Column("Nickname")]
         [StringLength(30)]
         public string? Nickname { get; set; }
+
         public ICollection<Event> Events { get; set; }
 
 

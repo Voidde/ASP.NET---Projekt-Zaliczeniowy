@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,159 +13,105 @@ using Projekt.Models;
 
 namespace Projekt.Controllers
 {
+
+    [Authorize(Roles = "Admin")]
     public class EventController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IEventService _eventService;
 
-        public EventController(AppDbContext context)
+        public EventController(AppDbContext context,IEventService eventService)
         {
-            _context = context;
+            _eventService= eventService;
         }
+        [Authorize(Roles = "Admin")]
         // GET: EventController
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Events.ToListAsync());
+            return View(_eventService.FindAll());
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: EventController/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Events == null)
-            {
-                return NotFound();
-            }
-            var _event = await _context.Events.FirstOrDefaultAsync(a => a.EventId == id);
-
-            if (_event == null)
-            {
-                return NotFound();
-            }
-            return View(_event);
+            var @event = _eventService.FindBy(id);
+            return @event is null ? NotFound() : View(@event);
         }
+        [AllowAnonymous]
+        [Authorize(Roles = "Admin,User")]
         // GET: EventController/Details/5
-        public async Task<IActionResult> DetailsUser(int? id)
+        public IActionResult DetailsUser(int? id)
         {
-            if (id == null || _context.Events == null)
-            {
-                return NotFound();
-            }
-            var _event = await _context.Events.FirstOrDefaultAsync(a => a.EventId == id);
-
-            if (_event == null)
-            {
-                return NotFound();
-            }
-            return View(_event);
+            var @event = _eventService.FindBy(id);
+            return @event is null ? NotFound() : View(@event);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: EventController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: EventController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventId,EventName,Description,DateOfEvent,TypeOfEvent,TicketPrice,PlaceId")] Event Evente)
+        public IActionResult Create([Bind("EventId,EventName,Description,DateOfEvent,TypeOfEvent,TicketPrice,PlaceId")] Event @event)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(Evente);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                _eventService.Save(@event);
+                return RedirectToAction("Index");
             }
-            return View(Evente);
+            return View(@event);
         }
 
 
-
+        [Authorize(Roles = "Admin")]
         // GET: EventController/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
-            if (id == null || _context.Events == null)
-            {
-                return NotFound();
-            }
-            var Evente = await _context.Events.FindAsync(id);
-
-            if (Evente == null)
-            {
-                return NotFound();
-            }
-            return View(Evente);
+            var @event = _eventService.FindBy(@id);
+            return @event is null ? NotFound() : View(@event);
         }
 
+
+        [Authorize(Roles = "Admin")]
         // POST: EventController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventId,EventName,Description,DateOfEvent,TypeOfEvent,TicketPrice,PlaceId")] Event _event)
+        public IActionResult Edit(int id, [Bind("EventId,EventName,Description,DateOfEvent,TypeOfEvent,TicketPrice,PlaceId")] Event @event)
         {
-            if (id != _event.EventId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(_event);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventExists(_event.EventId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _eventService.Update(@event);
                 return RedirectToAction(nameof(Index));
             }
-            return View(_event);
+            return View(@event);
         }
-           
 
-
+        [Authorize(Roles = "Admin")]
         // GET: EventController/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
-            if (id == null || _context.Events == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var _event = await _context.Events.FirstOrDefaultAsync(a => a.EventId == id);
-            if (_event == null)
-            {
-                return NotFound();
-            }
-            return View(_event);
+            var @event = _eventService.FindBy(id);
+            return @event is null ? NotFound() : View(@event);
         }
 
+        [Authorize(Roles = "Admin")]
         // POST: EventController/Delete/5
         [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        public IActionResult DeleteConfirmed(int? id)
         {
-            if (_context.Events == null)
+            if (_eventService.Delete(id))
             {
-                return Problem("Entity Events is null");
+                return RedirectToAction(nameof(Index));
             }
-            var _event = await _context.Events.FindAsync(id);
-            if (_event != null)
-            {
-                _context.Events.Remove(_event);
-            }
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Problem("Event doesn't exist,can't delete");
         }
-        private bool EventExists(int id)
-        {
-            return _context.Events.Any(e => e.EventId == id);
-        }
+
     }
 }

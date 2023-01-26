@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Projekt.Areas.Identity.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace Projekt.Models
 {
@@ -8,14 +10,16 @@ namespace Projekt.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TicketId { get; set; }
-
-        public string? ClientId { get; set; }
-
+        [Required]
+        public string? UserName { get; set; }
+        [NotMapped]
+        public virtual User User { get; set; }
+        [Required]
         public int? EventId { get; set; }
-
+        [Required]
         public decimal TicketPrice { get; set; }
 
-        public Event Event { get; set; }
+        public virtual Event Event { get; set; }
 
 
 

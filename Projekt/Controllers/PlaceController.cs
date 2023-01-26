@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,145 +13,91 @@ using Projekt.Models;
 
 namespace Projekt.Controllers
 {
+
+    [Authorize(Roles = "Admin")]
     public class PlaceController : Controller
     {
-        private readonly AppDbContext _context;
-        public PlaceController(AppDbContext context)
+        private readonly IPlaceService _placeService;
+        public PlaceController(AppDbContext context,IPlaceService placeService)
         {
-            _context = context;
+            _placeService = placeService;
         }
+        [Authorize(Roles = "Admin")]
         // GET: PlaceController
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Places.ToListAsync());
+            return View(_placeService.FindAll());
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: PlaceController/Details/5
-        public async Task<ActionResult> Details(int id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Places == null)
-            {
-                return NotFound();
-            }
-
-            var place = await _context.Places
-                .FirstOrDefaultAsync(m => m.PlaceId == id);
-            if (place == null)
-            {
-                return NotFound();
-            }
-
-            return View(place);
+            var place = _placeService.FindBy(id);
+            return place is null ? NotFound() : View(place);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: PlaceController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: PlaceController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PlaceId,PlaceName,City,PostalCode,Address,AddressNr,PlaceDescription")] Place place)
+        public IActionResult Create([Bind("PlaceId,PlaceName,City,PostalCode,Address,AddressNr,PlaceDescription")] Place place)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(place);
-                await _context.SaveChangesAsync();
+                _placeService.Save(place);
                 return RedirectToAction(nameof(Index));
             }
             return View(place);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: PlaceController/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
-            if (id == null || _context.Places == null)
-            {
-                return NotFound();
-            }
-
-            var place = await _context.Places.FindAsync(id);
-            if (place == null)
-            {
-                return NotFound();
-            }
-            return View(place);
+            var place = _placeService.FindBy(id);
+            return place is null ? NotFound() : View(place);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: PlaceController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PlaceName,City,PostalCode,Address,AddressNr,PlaceDescription")] Place place)
+        public IActionResult Edit(int id, [Bind("PlaceName,City,PostalCode,Address,AddressNr,PlaceDescription")] Place place)
         {
-            if (id != place.PlaceId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(place);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PlaceExists(place.PlaceId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _placeService.Update(place);
                 return RedirectToAction(nameof(Index));
             }
-            return View(place);
+            return View(place); 
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: PlaceController/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int? id)
         {
-            if (id == null || _context.Places == null)
+            if (id is null)
             {
                 return NotFound();
             }
-
-            var place = await _context.Places
-                .FirstOrDefaultAsync(m => m.PlaceId == id);
-            if (place == null)
-            {
-                return NotFound();
-            }
-
-            return View(place);
+            var place = _placeService.FindBy(id);
+            return place is null ? NotFound() : View(place);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: PlaceController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfrimed(int id)
+        public IActionResult DeleteConfrimed(int id)
         {
-            if (_context.Places == null)
+            if (_placeService.Delete(id))
             {
-                return Problem("Entity set 'AppDbContext.Places'  is null.");
+                return RedirectToAction(nameof(Index));
             }
-            var place = await _context.Places.FindAsync(id);
-            if (place != null)
-            {
-                _context.Places.Remove(place);
-            }
+            return Problem("This Place does not exist,can't delete");
+        }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        private bool PlaceExists(int id)
-        {
-            return _context.Places.Any(e => e.PlaceId == id);
-        }
     }
 }

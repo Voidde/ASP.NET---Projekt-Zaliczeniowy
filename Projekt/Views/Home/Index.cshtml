@@ -1,4 +1,10 @@
 ﻿@model IEnumerable<Projekt.Models.Event>
+@using Microsoft.AspNetCore.Identity
+@using Projekt.Areas.Identity.Data
+@using Projekt.Models
+@inject Ticket ticket;
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 @{
     ViewData["Title"] = "Home Page";
@@ -12,6 +18,7 @@
                 <th>@Html.DisplayNameFor(model => model.TypeOfEvent) </th>
                 <th>@Html.DisplayNameFor(model => model.DateOfEvent) </th>
                 <th>@Html.DisplayNameFor(model => model.TicketPrice) </th>
+                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -27,6 +34,14 @@
                 <td>
                     <a asp-controller="Event" asp-action="DetailsUser" asp-route-id="@item.EventId">Details</a>
                 </td>
+                <td>
+                     @if(SignInManager.IsSignedIn(User))
+                    {
+                        <a asp-controller="Ticket" asp-action="CreateUser" asp-route-id="@ticket.TicketId">Buy</a>
+                    }
+                    
+                </td>
+
             </tr>
             }
         }

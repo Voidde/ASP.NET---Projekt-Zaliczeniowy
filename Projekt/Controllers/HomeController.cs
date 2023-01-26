@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Models;
 using System.Diagnostics;
 
 namespace Projekt.Controllers
 {
+    [AllowAnonymous]
+    [Authorize(Roles = "Admin,User")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -20,23 +23,29 @@ namespace Projekt.Controllers
         {
             return View(await _context.Events.ToListAsync());
         }
-
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Artist()
         {
             return View();
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Event()
         {
             return View();
         }
+        [AllowAnonymous]
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Ticket()
         {
             return View();
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Place()
         {
             return View();

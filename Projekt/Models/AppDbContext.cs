@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Projekt.Areas.Identity.Data;
 
 
 namespace Projekt.Models
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
         public DbSet<Event> Events { get; set; }
         public DbSet<Artist> Artists{ get; set; }
@@ -18,6 +19,7 @@ namespace Projekt.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Event>().HasData(
                 new Event() { EventId = 1, EventName = "Noc z Szotem!", Description = "Całonocna zabawa z Szotem!", TypeOfEvent = "Koncert", DateOfEvent = new DateTime(2023, 2, 1, 18, 30, 0), TicketPrice = 40, PlaceId = 3 },
@@ -32,9 +34,9 @@ namespace Projekt.Models
                 );
 
             modelBuilder.Entity<Ticket>().HasData(
-                new Ticket() { ClientId = "asad", EventId = 1, TicketId = 1, TicketPrice = 40 },
-                new Ticket() { ClientId = "dasd", EventId = 1, TicketId = 2, TicketPrice = 40 },
-                new Ticket() { ClientId = "dfsdfa", EventId = 1, TicketId = 3, TicketPrice = 40 } 
+                new Ticket() { UserName = "asad", EventId = 1, TicketId = 1, TicketPrice = 40 },
+                new Ticket() { UserName = "dasd", EventId = 1, TicketId = 2, TicketPrice = 40 },
+                new Ticket() { UserName = "dfsdfa", EventId = 1, TicketId = 3, TicketPrice = 40 } 
                 );
 
             modelBuilder.Entity<Place>().HasData(
@@ -52,8 +54,55 @@ namespace Projekt.Models
                     new { ArtistsArtistId = 3, EventsEventId = 2 }
                     ));
 
+            //User roles
+            List<IdentityRole> roles = new List<IdentityRole>()
+            {
+                new IdentityRole{Name = "Admin", NormalizedName = "ADMIN"},
+                new IdentityRole{Name ="User",NormalizedName = "USER"}
+            };
 
+            modelBuilder.Entity<IdentityRole>().HasData(roles);
+
+            //Users
+            var pH = new PasswordHasher<User>();
+
+            List<User> users = new List<User>()
+            {
+                new User
+                {
+                    UserName = "TestUser@mail.com",
+                    NormalizedUserName = "TESTUSER@MAIL.COM",
+                    Email = "TestUser@mail.com",
+                    NormalizedEmail = "TESTUSER@MAIL.COM"
+                },
+                new User
+                {
+                    UserName = "Admin@mail.com",
+                    NormalizedUserName = "ADMIN@mail.com",
+                    Email = "Admin@mail.com",
+                    NormalizedEmail = "ADMIN@MAIL.COM"
+                }
+            };
+
+            modelBuilder.Entity<User>().HasData(users);
+
+            List<IdentityUserRole<string>> userRoles = new List<IdentityUserRole<string>>();
+
+            users[0].PasswordHash = pH.HashPassword(users[0], "User.123");
+            users[1].PasswordHash = pH.HashPassword(users[1], "User.155");
+
+            userRoles.Add(new IdentityUserRole<string>
+            {
+                UserId = users[0].Id,
+                RoleId = roles.First(q => q.Name == "User").Id
+            });
+            userRoles.Add(new IdentityUserRole<string>
+            {
+                UserId = users[1].Id,
+                RoleId = roles.First(q => q.Name == "Admin").Id
+            });
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRoles);
         }
-        
+       
     }
 }

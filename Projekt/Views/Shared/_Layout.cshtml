@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Projekt.Areas.Identity.Data
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,27 +25,36 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Artist" asp-action="Index">Artists</a>
-                        </li>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Place" asp-action="Index">Places</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Events</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Ticket" asp-action="Index">Tickets</a>
-                        </li>
+                        </li>                      
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            if (this.User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Artist" asp-action="Index">Artists</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Place" asp-action="Index">Places</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Events</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Ticket" asp-action="Index">Tickets</a>
+                                </li>
+                            }
+                            else{
+                                <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Ticket" asp-action="Index">Tickets</a>
+                                </li>
+                            }
+
+                        }
                     </ul>
                    <div>
                        <partial name="_LoginPartial" />
                    </div>
+            </div>
             </div>
         </nav>
     </header>
