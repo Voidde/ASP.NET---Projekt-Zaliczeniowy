@@ -49,7 +49,7 @@ namespace Projekt.Models
 
         [DataMember]
         public int PlaceId { get; set; }
-        public virtual Place Place { get; set; }
+        public virtual Place? Place { get; set; }
 
         public ICollection<Artist> Artists { get; set; }
 
