@@ -3,7 +3,7 @@ namespace Projekt.Models
 {
     public interface IEventService
     {
-        public int Save(Event? @event);
+        public Event? Save(Event? @event);
 
         public bool Delete(int? id);
 

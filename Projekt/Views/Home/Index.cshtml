@@ -2,12 +2,11 @@
 @using Microsoft.AspNetCore.Identity
 @using Projekt.Areas.Identity.Data
 @using Projekt.Models
-@inject Ticket ticket;
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
-
 @{
     ViewData["Title"] = "Home Page";
+    
 }
 
 <div class="text-center">
@@ -35,11 +34,12 @@
                     <a asp-controller="Event" asp-action="DetailsUser" asp-route-id="@item.EventId">Details</a>
                 </td>
                 <td>
-                     @if(SignInManager.IsSignedIn(User))
-                    {
-                        <a asp-controller="Ticket" asp-action="CreateUser" asp-route-id="@ticket.TicketId">Buy</a>
-                    }
-                    
+                        <div>
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                <a asp-controller="Ticket" asp-action="Create">Buy</a>
+                            }
+                        </div>
                 </td>
 
             </tr>

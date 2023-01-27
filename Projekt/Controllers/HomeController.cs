@@ -42,8 +42,8 @@ namespace Projekt.Controllers
         [AllowAnonymous]
         [Authorize(Roles = "Admin,User")]
         public IActionResult Ticket()
-        {
-            return View();
+        { 
+            return View(_context.Events.ToList());
         }
         [Authorize(Roles = "Admin")]
         public IActionResult Place()

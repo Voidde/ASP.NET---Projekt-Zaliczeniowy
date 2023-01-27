@@ -1,25 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Projekt.Models
 {
     public class EventServiceEF : IEventService
     {
         private readonly AppDbContext _context;
-        public EventServiceEF(AppDbContext context)
+        private readonly ILogger<EventServiceEF> _logger;
+        public EventServiceEF(AppDbContext context, ILogger<EventServiceEF> logger)
         {
             _context = context;
+            _logger = logger;
         }
-        public int Save(Event? @event)
+        public Event? Save(Event? @event)
         {
             try
             {
                 var entityEntry = _context.Events.Add(@event);
                 _context.SaveChanges();
-                return entityEntry.Entity.EventId;
+                return entityEntry.Entity;
             }
-            catch
+            catch(Exception e)
             {
-                return -1;
+                _logger.LogError(e.Message);
+                return null;
             }
         }
         public bool Delete(int? id)

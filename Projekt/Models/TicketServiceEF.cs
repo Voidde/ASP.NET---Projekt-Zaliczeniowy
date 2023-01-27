@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Projekt.Areas.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Projekt.Models
 {
     public class TicketServiceEF : ITicketService
     {
         private readonly AppDbContext _context;
+
 
         public TicketServiceEF(AppDbContext context)
         {
@@ -58,7 +62,7 @@ namespace Projekt.Models
                 {
                     find.UserName = ticket.UserName;
                     find.TicketPrice = ticket.TicketPrice;
-                    find.EventId= ticket.EventId;
+                    find.EventId = ticket.EventId;
                     _context.SaveChanges();
                     return true;
                 }
@@ -69,6 +73,7 @@ namespace Projekt.Models
                 return false;
             }
         }
+
         public void SaveChanges()
         {
             _context.SaveChanges();

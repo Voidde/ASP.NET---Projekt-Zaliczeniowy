@@ -56,7 +56,7 @@ namespace Projekt.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("EventId,EventName,Description,DateOfEvent,TypeOfEvent,TicketPrice,PlaceId")] Event @event)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _eventService.Save(@event);
                 return RedirectToAction("Index");
@@ -80,7 +80,7 @@ namespace Projekt.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, [Bind("EventId,EventName,Description,DateOfEvent,TypeOfEvent,TicketPrice,PlaceId")] Event @event)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _eventService.Update(@event);
                 return RedirectToAction(nameof(Index));

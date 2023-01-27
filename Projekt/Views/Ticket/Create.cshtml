@@ -1,5 +1,15 @@
 ﻿@model Projekt.Models.Ticket
-
+@using Microsoft.AspNetCore.Identity
+@using Projekt.Areas.Identity.Data
+@using Projekt.Models
+@inject SignInManager<User> SignInManager
+@inject Microsoft.AspNetCore.Identity.UserManager<User> _userManager
+@{
+    string userId = _userManager.GetUserId(User);
+    string userName = _userManager.GetUserName(User);
+}
+@*@if (SignInManager.IsSignedIn(User))*@
+@*@if (this.User.IsInRole("User"))*@
 @{
     ViewData["Title"] = "Create";
 }
@@ -14,17 +24,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
+                <input asp-for="UserName" data="userName" class="form-control" />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EventId" class="control-label"></label>
-                <input asp-for="EventId" class="form-control" />
+                <input type="number" min="1" asp-for="EventId" class="form-control" />
                 <span asp-validation-for="EventId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="TicketPrice" class="control-label"></label>
-                <input asp-for="TicketPrice" class="form-control" />
+                <input type="number" min="0" asp-for="TicketPrice" class="form-control" />
                 <span asp-validation-for="TicketPrice" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -35,7 +45,14 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    @if (this.User.IsInRole("User"))
+    {
+        <a asp-controller="Home" asp-action="Index">Back to List</a>
+    }
+    else
+    {
+        <a asp-action="Index">Back to List</a>
+    }
 </div>
 
 @section Scripts {

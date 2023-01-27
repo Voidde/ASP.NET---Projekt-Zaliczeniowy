@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Projekt.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Projekt.Controllers
 {
@@ -22,44 +23,54 @@ namespace Projekt.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Event> Get()
+        public ActionResult<IEnumerable<Event>> GetEvents()
         {
-            return _eventService.FindAll();
+            return new ActionResult<IEnumerable<Event>>(_eventService.FindAll());
         }
 
         //GET: api/Events/5
         [HttpGet("{id}", Name = "Get")]
-        public ActionResult<Event> Get(int id)
+        public ActionResult<Event> GetEvent(int id)
         {
             return _eventService.FindBy(id);
         }
 
         //POST: api/Events
         [HttpPost]
-        public ActionResult Post([FromBody] Event @event)
+        public IActionResult PostEvent(Event @event)
         {
-            _eventService.Save(@event);
-            return Created("", @event);
+            if (_eventService == null)
+            {
+                return Problem("Entity Events is null");
+            }
+            if (ModelState.IsValid)
+            {
+                var saved = _eventService.Save(@event);
+                return Created("",saved);
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
         }
 
         // PUT: api/Events/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Event @event)
+        public IActionResult PutEvent(int id, Event @event)
         {
-            @event.EventId = (int)id;
-            if (_eventService.Update(@event))
+            if(id!= @event.EventId)
             {
                 return BadRequest();
             }
-            else
-            {
-                return NoContent();
-            }
+            @event.EventId = id;
+            _eventService.Update(@event);
+            return NoContent();
 
         }
         // DELETE: api/Books/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteEvent(int id)
         {
             if (_eventService == null)
             {

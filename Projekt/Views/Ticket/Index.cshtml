@@ -1,12 +1,24 @@
 ﻿@model IEnumerable<Projekt.Models.Ticket>
-
+@using Microsoft.AspNetCore.Identity
+@using Projekt.Areas.Identity.Data
+@inject SignInManager<User> SignInManager
+@inject Microsoft.AspNetCore.Identity.UserManager<User> _userManager
+@{
+    string userId = _userManager.GetUserId(User);
+    string userName = _userManager.GetUserName(User);
+}
+@*@if (SignInManager.IsSignedIn(User))*@
+@*@if (this.User.IsInRole("User"))*@
 @{
     ViewData["Title"] = "Index";
 }
-<h1>Index</h1>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Tickets</h1>
+@if (this.User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -19,17 +31,35 @@
     </thead>
     @foreach (var item in Model)
     {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.UserName)</td>
-            <td>@Html.DisplayFor(modelItem => item.EventId)</td>
-            <td>@Html.DisplayFor(modelItem => item.TicketId)</td>
-            <td>@Html.DisplayFor(modelItem => item.TicketPrice)</td>
-            <td>
+        @if (this.User.IsInRole("Admin"))
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                <td>@Html.DisplayFor(modelItem => item.EventId)</td>
+                <td>@Html.DisplayFor(modelItem => item.TicketId)</td>
+                <td>@Html.DisplayFor(modelItem => item.TicketPrice)</td>
+                <td>
                 <a asp-action="Edit" asp-route-id="@item.TicketId">Edit</a>
                 <a asp-action="Details" asp-route-id="@item.TicketId">Details</a>
                 <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
-            </td>
-        </tr>
+                </td>
+            </tr>
+        }
+        else
+        {
+            if (item.UserName == userName)
+            {
+             <tr>
+                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                <td>@Html.DisplayFor(modelItem => item.EventId)</td>
+                <td>@Html.DisplayFor(modelItem => item.TicketId)</td>
+                <td>@Html.DisplayFor(modelItem => item.TicketPrice)</td>
+                <td>
+                <a asp-action="Details" asp-route-id="@item.TicketId">Details</a>
+                </td>
+            </tr>
+            }
+        }
 
     }
 </table>

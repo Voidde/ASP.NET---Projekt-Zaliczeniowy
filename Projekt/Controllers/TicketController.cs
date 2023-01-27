@@ -11,43 +11,44 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Projekt.Models;
 
+
 namespace Projekt.Controllers
 {
     [Authorize(Roles = "Admin,User")]
     public class TicketController : Controller
     {
         private readonly ITicketService _ticketService;
-        public TicketController(AppDbContext context,ITicketService ticketService)
+        public TicketController(AppDbContext context, ITicketService ticketService)
         {
-            _ticketService= ticketService;
+            _ticketService = ticketService;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         // GET: TicketController
         public IActionResult Index()
         {
             return View(_ticketService.FindAll());
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         // GET: TicketController/Details/5
         public IActionResult Details(int? id)
         {
             var ticket = _ticketService.FindBy(id);
             return ticket is null ? NotFound() : View(ticket);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         // GET: TicketController/Create
         public IActionResult Create()
         {
             return View();
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         // POST: TicketController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("TicketId,EventId,UserName,TicketPrice")] Ticket ticket)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _ticketService.Save(ticket);
                 return RedirectToAction(nameof(Index));
@@ -67,7 +68,7 @@ namespace Projekt.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, [Bind("TicketId,EventId,UserName,TicketPrice")] Ticket ticket)
         {
-            if(ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _ticketService.Update(ticket);
                 return RedirectToAction(nameof(Index));
@@ -87,11 +88,11 @@ namespace Projekt.Controllers
         }
         [Authorize(Roles = "Admin")]
         // POST: TicketController/Delete/5
-        [HttpPost,ActionName("Delete")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int? id)
         {
-           if (_ticketService.Delete(id))
+            if (_ticketService.Delete(id))
             {
                 return RedirectToAction(nameof(Index));
             }

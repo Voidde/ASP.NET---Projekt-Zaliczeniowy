@@ -1,15 +1,32 @@
 ﻿@model Projekt.Models.Ticket
+@using Microsoft.AspNetCore.Identity
+@using Projekt.Areas.Identity.Data
+@inject SignInManager<User> SignInManager
+@inject Microsoft.AspNetCore.Identity.UserManager<User> _userManager
+@{
+    string userId = _userManager.GetUserId(User);
+    string userName = _userManager.GetUserName(User);
+}
+@*@if (SignInManager.IsSignedIn(User))*@
+@*@if (this.User.IsInRole("User"))*@
 
 @{
     ViewData["Title"] = "Details";
 }
 
+
 <h1>Details</h1>
 
 <div>
-    <h4>Author</h4>
+    <h4>Ticket</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TicketId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TicketId)
+        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.UserName)
         </dt>
@@ -31,6 +48,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.TicketId">Edit</a> |
+    @if(this.User.IsInRole("Admin"))
+    {
+    <a asp-action="Edit" asp-route-id="@Model?.TicketId">Edit</a> 
+    }
     <a asp-action="Index">Back to List</a>
 </div>
