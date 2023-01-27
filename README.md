@@ -100,7 +100,7 @@ Po czym jak utworzy nam się migracja, należy wpisać kolejną komendę
 dotnet ef database update
 ```
 
->Dane logowania znajdujące się w bazie:
+# Dane logowania znajdujące się w bazie:
 
 Zwykły użytkownik:
 ```
