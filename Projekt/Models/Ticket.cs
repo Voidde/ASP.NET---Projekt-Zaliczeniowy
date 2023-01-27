@@ -14,14 +14,14 @@ namespace Projekt.Models
         [EmailAddress]
         public string? UserName { get; set; }
         [NotMapped]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
         [Required]
         public int? EventId { get; set; }
         [Required]
         [DataType(DataType.Currency)]
         public decimal TicketPrice { get; set; }
         [NotMapped]
-        public virtual Event Event { get; set; }
+        public virtual Event? Event { get; set; }
 
 
 
